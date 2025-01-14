@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import styles from './style';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -51,7 +51,7 @@ const LoginScreen = ({ navigation }: any) => {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>ᐳ</Text>
+        <Text style={styles.buttonText}><Image source={require('../../assets/VectorContinue.png')} /></Text>
       </TouchableOpacity>
     </View>
   );
