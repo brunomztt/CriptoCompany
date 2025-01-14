@@ -40,6 +40,7 @@ const PinScreen = () => {
             <Text style={styles.keyboardKeyText}>{number}</Text>
           </TouchableOpacity>
         ))}
+        <View style={styles.keyboardKey}><Text></Text></View>
         <TouchableOpacity style={styles.keyboardKey} onPress={() => handleKeyPress('0')}>
           <Text style={styles.keyboardKeyText}>0</Text>
         </TouchableOpacity>

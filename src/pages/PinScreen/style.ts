@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   keyboardKey: {
-    width: 80,
-    height: 80,
+    width: 82,
+    height: 82,
     justifyContent: 'center',
     alignItems: 'center',
     margin: 10,
