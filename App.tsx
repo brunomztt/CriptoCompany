@@ -5,6 +5,7 @@ import LoginScreen from './src/pages/LoginScreen';
 import PinScreen from './src/pages/PinScreen';
 import FirstAcess from './src/pages/FirstAcess';
 import SetAlertsScreen from './src/pages/SetAlertsScreen';
+import ManagePortifolioScreen from './src/pages/ManagePortifolioScreen';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,7 @@ const App = () => {
       <Stack.Navigator initialRouteName="FirstAcess" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="FirstAcess" component={FirstAcess} />
         <Stack.Screen name="SetAlertsScreen" component={SetAlertsScreen} />
+        <Stack.Screen name="ManagePortifolioScreen" component={ManagePortifolioScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="PinScreen" component={PinScreen} />
       </Stack.Navigator>
