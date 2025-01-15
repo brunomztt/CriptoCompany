@@ -25,7 +25,7 @@ export default function ManagePortifolioScreen({ navigation }: any) {
                 <View style={[styles.dot, styles.activeDot]} />
                 <View style={styles.dot} />
             </View>
-            <TouchableOpacity onPress={() => navigateToNext('')}>
+            <TouchableOpacity onPress={() => navigateToNext('StaySecureScreen')}>
                 <Text style={styles.nextButton}>Next</Text>
             </TouchableOpacity>
         </View>

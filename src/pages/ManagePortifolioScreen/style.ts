@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   topRedImg: {
     width: 409,
     height: 470,
+    marginTop: -40,
     resizeMode: 'contain',
     justifyContent: 'center',
     alignItems: 'center',
