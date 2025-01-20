@@ -1,9 +1,19 @@
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import styles from './style';
 
+type RootStackParamList = {
+  HomeScreen: undefined;
+  PinScreen: undefined;
+};
+
+type NavigationProps = StackNavigationProp<RootStackParamList, 'PinScreen'>;
+
 const PinScreen = () => {
   const [pin, setPin] = useState('');
+  const navigation = useNavigation<NavigationProps>();
 
   const handleKeyPress = (value: string) => {
     if (pin.length < 4) {
@@ -13,6 +23,14 @@ const PinScreen = () => {
 
   const handleDelete = () => {
     setPin(pin.slice(0, -1));
+  };
+
+  const handleContinue = () => {
+    if (pin.length === 4) {
+      navigation.navigate('HomeScreen');
+    } else {
+      alert('Please enter a 4-digit PIN before continuing.');
+    }
   };
 
   return (
@@ -53,11 +71,10 @@ const PinScreen = () => {
         <Text style={styles.resetText}>Reset</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.continueButton}>
+      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
         <Text style={styles.continueButtonText}>Continue</Text>
       </TouchableOpacity>
     </View>
   );
 };
-
 export default PinScreen;
