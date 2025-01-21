@@ -3,7 +3,7 @@ import { View, Text, FlatList, Image, TouchableOpacity, TextInput, ActivityIndic
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import styles from './style';
-import defaultstyles from '../../global/defaultstyle';
+import defaultstyles from '../../../global/defaultstyle';
 import { SvgXml } from 'react-native-svg';
 
 const HomeScreen = ({ navigation }: { navigation: any }) => {

@@ -8,14 +8,14 @@ import FirstAcess from './src/pages/FirstAcess';
 import SetAlertsScreen from './src/pages/SetAlertsScreen';
 import ManagePortifolioScreen from './src/pages/ManagePortifolioScreen';
 import StaySecureScreen from './src/pages/StaySecureScreen';
-import HomeScreen from './src/pages/HomeScreen';
-import CryptoScreen from './src/pages/CryptoScreen';
-import CryptoDetailsScreen from './src/pages/CryptoDetailsScreen';
+import HomeScreen from './src/pages/App/HomeScreen';
+import CryptoScreen from './src/pages/App/CryptoScreen';
+import CryptoDetailsScreen from './src/pages/App/CryptoDetailsScreen';
 import PhoneScreen from './src/pages/Register/PhoneScreen';
 import ConfirmNumberScreen from './src/pages/Register/ConfirmNumberScreen';
 import UserInfoScreen from './src/pages/Register/UserInfoScreen';
 import CreatePinScreen from './src/pages/Register/CreatePinScreen';
-import ExchangeScreen from './src/pages/ExchangeScreen';
+import ExchangeScreen from './src/pages/App/ExchangeScreen';
 
 
 const Stack = createStackNavigator();
