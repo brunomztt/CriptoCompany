@@ -11,6 +11,12 @@ import StaySecureScreen from './src/pages/StaySecureScreen';
 import HomeScreen from './src/pages/HomeScreen';
 import CryptoScreen from './src/pages/CryptoScreen';
 import CryptoDetailsScreen from './src/pages/CryptoDetailsScreen';
+import PhoneScreen from './src/pages/PhoneScreen';
+import ConfirmNumberScreen from './src/pages/ConfirmNumberScreen';
+import UserInfoScreen from './src/pages/UserInfoScreen';
+import CreatePinScreen from './src/pages/CreatePinScreen';
+import ExchangeScreen from './src/pages/ExchangeScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -45,19 +51,35 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={isFirstAccess ? "FirstAcess" : "LoginScreen"} screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="FirstAcess" component={FirstAcess} initialParams={{ onComplete: handleFirstAccessComplete }} />
-        <Stack.Screen name="SetAlertsScreen" component={SetAlertsScreen} />
-        <Stack.Screen name="ManagePortifolioScreen" component={ManagePortifolioScreen} />
-        <Stack.Screen name="StaySecureScreen" component={StaySecureScreen} />
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="PinScreen" component={PinScreen} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="CryptoScreen" component={CryptoScreen} />
-        <Stack.Screen name="CryptoDetailsScreen" component={CryptoDetailsScreen} options={{ title: 'Detalhes da Moeda' }} />
-      </Stack.Navigator>
+      {isFirstAccess ? (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="FirstAcess" component={FirstAcess} initialParams={{ onComplete: handleFirstAccessComplete }} />
+          <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="SetAlertsScreen" component={SetAlertsScreen} />
+          <Stack.Screen name="ManagePortifolioScreen" component={ManagePortifolioScreen} />
+          <Stack.Screen name="StaySecureScreen" component={StaySecureScreen} />
+          <Stack.Screen name="PhoneScreen" component={PhoneScreen} />
+          <Stack.Screen name="ConfirmNumberScreen" component={ConfirmNumberScreen} />
+          <Stack.Screen name="UserInfoScreen" component={UserInfoScreen} />
+          <Stack.Screen name="CreatePinScreen" component={CreatePinScreen} />
+          <Stack.Screen name="PinScreen" component={PinScreen} />
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="CryptoScreen" component={CryptoScreen} />
+          <Stack.Screen name="CryptoDetailsScreen" component={CryptoDetailsScreen} options={{ title: 'Detalhes da Moeda' }} />
+          <Stack.Screen name="ExchangeScreen" component={ExchangeScreen} />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="LoginScreen" component={LoginScreen} />
+          <Stack.Screen name="PinScreen" component={PinScreen} />
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="CryptoScreen" component={CryptoScreen} />
+          <Stack.Screen name="CryptoDetailsScreen" component={CryptoDetailsScreen} options={{ title: 'Detalhes da Moeda' }} />
+          <Stack.Screen name="ExchangeScreen" component={ExchangeScreen} />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
-  );
+  );  
 };
 
 export default App;

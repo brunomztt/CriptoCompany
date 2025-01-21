@@ -4,6 +4,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+    paddingHorizontal: 16,
+    paddingTop: 20,
   },
   header: {
     flexDirection: 'row',
@@ -30,7 +32,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   cryptoList: {
-    padding: 16,
+    paddingBottom: 20,
   },
   cryptoItem: {
     flexDirection: 'row',
@@ -63,6 +65,84 @@ const styles = StyleSheet.create({
   cryptoPrice: {
     fontSize: 16,
     color: '#666',
+  },
+  searchResults: {
+    backgroundColor: '#f8f8f8',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  searchResultItem: {
+    fontSize: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  searchResultsContainer: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalButtonDelete: {
+    backgroundColor: '#f44336',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    fontSize: 16,
+  },
+  searchText: {
+    color: '#23EBC3',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginLeft: 15,
   },
 });
 

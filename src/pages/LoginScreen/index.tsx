@@ -1,19 +1,33 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './style';
 import defaultstyles from '../../global/defaultstyle';
-import { Ionicons } from '@expo/vector-icons';
 
-const LoginScreen = ({ navigation }: any) => {
-  const [passwordVisible, setPasswordVisible] = useState(false);
+const LoginScreen = ({ navigation }: { navigation: any }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (username.trim() === '' || password.trim() === '') {
       Alert.alert('Error', 'Please fill in both username and password');
-    } else {
-      navigation.navigate('PinScreen');
+      return;
+    }
+
+    try {
+      const storedData = await AsyncStorage.getItem('userData');
+      if (storedData) {
+        const { username: storedUsername, password: storedPassword } = JSON.parse(storedData);
+        if (username === storedUsername && password === storedPassword) {
+          navigation.navigate('PinScreen');
+        } else {
+          Alert.alert('Error', 'Invalid username or password');
+        }
+      } else {
+        Alert.alert('Error', 'No user data found');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Unable to verify user data.');
     }
   };
 
@@ -21,38 +35,23 @@ const LoginScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome back</Text>
       <Text style={styles.subtitle}>Sign in to your account</Text>
-
       <TextInput
-        style={styles.input}
         placeholder="Username"
-        placeholderTextColor="#999"
         value={username}
         onChangeText={setUsername}
+        style={styles.input}
       />
-
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.passwordInput}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          secureTextEntry={!passwordVisible}
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity
-          style={styles.togglePasswordVisibility}
-          onPress={() => setPasswordVisible(!passwordVisible)}
-        >
-          <Ionicons
-            name={passwordVisible ? 'eye-off' : 'eye'}
-            size={24}
-            color="#999"
-          />
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity style={defaultstyles.button} onPress={handleLogin}>
-        <Text style={defaultstyles.buttonText}><Image source={require('../../assets/VectorContinue.png')} /></Text>
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <TouchableOpacity onPress={handleLogin} style={styles.button}>
+        <Text style={defaultstyles.buttonText}>
+          <Image source={require('../../assets/VectorContinue.png')} />
+        </Text>
       </TouchableOpacity>
     </View>
   );

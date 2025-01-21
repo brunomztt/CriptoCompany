@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import styles from './style';
+import 'react-native-gesture-handler';
 
 export default function FirstAcess({ navigation }: any) {
     const getStartedButtonFunc = () => {

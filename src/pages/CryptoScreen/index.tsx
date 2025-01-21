@@ -1,98 +1,133 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, TextInput, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
 import styles from './style';
-
-const cryptoIds = [
-  'bitcoin',
-  'ethereum',
-  'tether',
-  'binancecoin',
-  'ripple',
-  'cardano',
-  'polkadot',
-];
-
-const cryptoColors: { [key: string]: string } = {
-  bitcoin: '#F7931A',
-  ethereum: '#3C3C3D',
-  tether: '#26A17B',
-  binancecoin: '#F0B90B',
-  ripple: '#346AA9',
-  cardano: '#0033AD',
-  solana: '#9945FF',
-  polkadot: '#E6007A',
-};
-
-// Adicionando as siglas das criptomoedas
-const cryptoSymbols: { [key: string]: string } = {
-  bitcoin: 'BTC',
-  ethereum: 'ETH',
-  tether: 'USDT',
-  binancecoin: 'BNB',
-  ripple: 'XRP',
-  cardano: 'ADA',
-  polkadot: 'DOT',
-};
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CryptoScreen = ({ navigation }: { navigation: any }) => {
   const [cryptoData, setCryptoData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [cryptoToDelete, setCryptoToDelete] = useState<any>(null);
+
+//CHange later
+  const symbolToIdMap: { [key: string]: string } = {
+    'eth': 'ethereum',
+    'btc': 'bitcoin',
+    'ltc': 'litecoin',
+    'xrp': 'ripple',
+    'USDT': 'tether',
+  };
 
   useEffect(() => {
-    fetchCryptoData();
+    const loadCryptos = async () => {
+      try {
+        const storedCryptos = await AsyncStorage.getItem('cryptoData');
+        if (storedCryptos) {
+          setCryptoData(JSON.parse(storedCryptos));
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading cryptos from AsyncStorage:', error);
+        setLoading(false);
+      }
+    };
+
+    loadCryptos();
   }, []);
 
-  const fetchCryptoData = async () => {
+  const fetchCryptoData = async (query: string) => {
+    const formattedQuery = query.trim().toLowerCase();
+    let cryptoId = symbolToIdMap[formattedQuery] || formattedQuery;
+
     try {
       const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&ids=${cryptoIds.join(
-          ','
-        )}`
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&ids=${cryptoId}`
       );
       const data = await response.json();
 
-      const formattedData = data.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        price: item.current_price,
-        iconUrl: item.image,
-      }));
+      if (data && data.length > 0) {
+        const formattedData = {
+          id: data[0].id,
+          name: data[0].name,
+          price: data[0].current_price,
+          symbol: data[0].symbol.toUpperCase(),
+          iconUrl: data[0].image,
+        };
 
-      setCryptoData(formattedData);
+        const isCryptoExists = cryptoData.some(crypto => crypto.symbol === formattedData.symbol);
+
+        if (isCryptoExists) {
+          Alert.alert('Crypto already added', 'This crypto has already been added to your list.');
+        } else {
+          setSearchResults([formattedData]);
+        }
+      } else {
+        Alert.alert('Crypto not found', 'Check your search and try again.');
+      }
     } catch (error) {
-      console.error('Erro ao buscar dados da API:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error fetching data from API:', error);
+    }
+  };
+
+  const handleSearchCrypto = async () => {
+    if (!searchQuery) return;
+    fetchCryptoData(searchQuery);
+  };
+
+  const handleAddCrypto = async (crypto: any) => {
+    const updatedCryptoData = [...cryptoData, crypto];
+
+    try {
+      await AsyncStorage.setItem('cryptoData', JSON.stringify(updatedCryptoData));
+      setCryptoData(updatedCryptoData);
+      setSearchQuery('');
+      setSearchResults([]);
+    } catch (error) {
+      console.error('Error saving crypto to AsyncStorage:', error);
+    }
+  };
+
+  const handleDeleteCrypto = async () => {
+    if (!cryptoToDelete) return;
+
+    const updatedCryptoData = cryptoData.filter(crypto => crypto.id !== cryptoToDelete.id);
+
+    try {
+      await AsyncStorage.setItem('cryptoData', JSON.stringify(updatedCryptoData));
+      setCryptoData(updatedCryptoData);
+      setIsModalVisible(false);
+      setCryptoToDelete(null);
+    } catch (error) {
+      console.error('Error deleting crypto from AsyncStorage:', error);
     }
   };
 
   const renderCryptoItem = ({ item }: { item: any }) => {
-    const backgroundColor = cryptoColors[item.id] || '#ddd';
-    const symbol = cryptoSymbols[item.id];
-
     return (
       <TouchableOpacity
-        style={[styles.cryptoItem]}
+        style={styles.cryptoItem}
         onPress={() =>
           navigation.navigate('CryptoDetailsScreen', {
             cryptoId: item.id,
             cryptoName: item.name,
             cryptoIcon: item.iconUrl,
             cryptoPrice: item.price,
+            cryptoSymbol: item.symbol,
           })
         }
+        onLongPress={() => {
+          setCryptoToDelete(item);
+          setIsModalVisible(true);
+        }}
       >
         <View>
           <Image source={{ uri: item.iconUrl }} style={styles.cryptoIcon} />
         </View>
         <View style={styles.cryptoInfo}>
-          <Text
-            style={[
-              styles.cryptoName,
-              { color: backgroundColor, fontFamily: 'DM Sans' },
-            ]}
-          >
-            {item.name} ({symbol})
+          <Text style={styles.cryptoName}>
+            {item.name} ({item.symbol})
           </Text>
         </View>
         <Text style={styles.cryptoPrice}>
@@ -110,6 +145,7 @@ const CryptoScreen = ({ navigation }: { navigation: any }) => {
         </TouchableOpacity>
         <Text style={styles.title}>Tokens</Text>
       </View>
+
       {loading ? (
         <ActivityIndicator size="large" color="#6200EE" style={styles.loading} />
       ) : (
@@ -120,6 +156,71 @@ const CryptoScreen = ({ navigation }: { navigation: any }) => {
           contentContainerStyle={styles.cryptoList}
         />
       )}
+
+      <View style={styles.searchContainer}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search for a new crypto"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+      <View>
+        <TouchableOpacity onPress={handleSearchCrypto}>
+          <Text style={styles.searchText}>Add</Text>
+        </TouchableOpacity>
+      </View>
+
+      </View>
+
+      {searchResults.length > 0 && (
+        <View style={styles.searchResultsContainer}>
+          {searchResults.map((crypto) => (
+            <TouchableOpacity
+              key={crypto.id}
+              style={styles.cryptoItem}
+              onPress={() => handleAddCrypto(crypto)}
+            >
+              <View>
+                <Image source={{ uri: crypto.iconUrl }} style={styles.cryptoIcon} />
+              </View>
+              <View style={styles.cryptoInfo}>
+                <Text style={styles.cryptoName}>
+                  {crypto.name} ({crypto.symbol})
+                </Text>
+              </View>
+              <Text style={styles.cryptoPrice}>
+                ≈ R$ {crypto.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      <Modal
+        visible={isModalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Delete Crypto</Text>
+              <Text style={styles.modalMessage}>
+                Are you sure you want to delete {cryptoToDelete?.name} ({cryptoToDelete?.symbol})?
+              </Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.modalButtonCancel}>
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleDeleteCrypto} style={styles.modalButtonDelete}>
+                  <Text style={styles.modalButtonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
