@@ -110,7 +110,7 @@ export default function PersonalInformationScreen({ navigation }: any) {
         style={defaultstyles.button}
         onPress={handleContinue}>
         <Text>
-          <Image source={require('../../assets/VectorContinue.png')} />
+          <Image source={require('../../../assets/VectorContinue.png')} />
         </Text>
       </TouchableOpacity>
     </View>

@@ -141,7 +141,7 @@ const CryptoScreen = ({ navigation }: { navigation: any }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}><Image source={require('../../assets/Blackback.png')} /></Text>
+          <Text style={styles.backButton}><Image source={require('../../../assets/Blackback.png')} /></Text>
         </TouchableOpacity>
         <Text style={styles.title}>Tokens</Text>
       </View>

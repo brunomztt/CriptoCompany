@@ -105,7 +105,7 @@ const CryptoDetailsScreen = ({ route, navigation }: { route: any; navigation: an
       <View style={styles.navbar}>
         <View style={styles.navbaritens}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backButton}><Image source={require('../../assets/Whiteback.png')} /></Text>
+            <Text style={styles.backButton}><Image source={require('../../../assets/Whiteback.png')} /></Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={toggleFavorite}>
             <SvgXml
