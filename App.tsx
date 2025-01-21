@@ -11,10 +11,10 @@ import StaySecureScreen from './src/pages/StaySecureScreen';
 import HomeScreen from './src/pages/HomeScreen';
 import CryptoScreen from './src/pages/CryptoScreen';
 import CryptoDetailsScreen from './src/pages/CryptoDetailsScreen';
-import PhoneScreen from './src/pages/PhoneScreen';
-import ConfirmNumberScreen from './src/pages/ConfirmNumberScreen';
-import UserInfoScreen from './src/pages/UserInfoScreen';
-import CreatePinScreen from './src/pages/CreatePinScreen';
+import PhoneScreen from './src/pages/Register/PhoneScreen';
+import ConfirmNumberScreen from './src/pages/Register/ConfirmNumberScreen';
+import UserInfoScreen from './src/pages/Register/UserInfoScreen';
+import CreatePinScreen from './src/pages/Register/CreatePinScreen';
 import ExchangeScreen from './src/pages/ExchangeScreen';
 
 
