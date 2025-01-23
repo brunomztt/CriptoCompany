@@ -24,18 +24,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 20,
   },
-  textContainer: 
-  {
+  textContainer: {
     alignItems: 'center',
     alignContent: 'center',
     backgroundColor: '#ffffffff',
     borderRadius: 16,
   },
+  flagContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
   flagIcon: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#E8E8E8',
+    overflow: 'hidden',
   },
   button: {
     backgroundColor: '#23EBC3',

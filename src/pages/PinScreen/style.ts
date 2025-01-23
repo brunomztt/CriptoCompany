@@ -29,23 +29,25 @@ const styles = StyleSheet.create({
   keyboardContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '85%',
+    justifyContent: 'space-evenly',
+    width: '100%',
     marginVertical: 20,
-  },
+  },  
   keyboardKey: {
-    width: 82,
-    height: 82,
+    width: '28%',
+    aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 10,
+    margin: 5,
   },
+  
   keyboardKeyText: {
     fontSize: 20,
     fontWeight: '600',
     color: '#1D1E1F',
   },
   resetText: {
+    marginTop: -10,
     fontSize: 16,
     color: '#1D1E1F',
     fontWeight: 'bold',

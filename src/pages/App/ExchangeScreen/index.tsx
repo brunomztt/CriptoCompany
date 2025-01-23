@@ -1,162 +1,153 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  TextInput,
+  Button,
+  Image,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
+import styles from './style';
 
 const ExchangeScreen = () => {
   const [favoriteCryptos, setFavoriteCryptos] = useState<any[]>([]);
-  const [cryptoData, setCryptoData] = useState<any>({});
-  const [loading, setLoading] = useState(true);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedCrypto, setSelectedCrypto] = useState<any>(null);
+  const [targetPrice, setTargetPrice] = useState<string>('');
+  const navigation = useNavigation();
 
   useFocusEffect(
     React.useCallback(() => {
       fetchFavoriteCryptos();
     }, [])
   );
+
   const fetchFavoriteCryptos = async () => {
     try {
-      setLoading(true);
       const favorites = await AsyncStorage.getItem('favorites');
       if (favorites) {
         const favoriteIds = JSON.parse(favorites);
-        if (favoriteIds.length > 0) {
+        if (Array.isArray(favoriteIds) && favoriteIds.length > 0) {
           const response = await axios.get(
-            `https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&ids=${favoriteIds.join(
-              ','
-            )}`
+            `https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&ids=${favoriteIds.join(",")}`
           );
           const data = response.data.map((item: any) => ({
             id: item.id,
             name: item.name,
             price: item.current_price,
             iconUrl: item.image,
-            amount: '',
-            pricePaid: '',
           }));
           setFavoriteCryptos(data);
-          setCryptoData(
-            data.reduce((acc: any, item: any) => {
-              acc[item.id] = { amount: '', pricePaid: '' };
-              return acc;
-            }, {})
-          );
         }
       }
     } catch (error) {
-      console.error('Erro ao buscar moedas favoritas:', error);
-      Alert.alert('Erro', 'Não foi possível carregar suas moedas favoritas.');
-    } finally {
-      setLoading(false);
+      Alert.alert('Error', 'Unable to load your favorite cryptocurrencies.');
     }
   };
 
-  const handleInputChange = (id: string, field: string, value: string) => {
-    setCryptoData((prev: any) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        [field]: value,
-      },
-    }));
+  const setAlertForCrypto = async (cryptoId: string, targetPrice: number) => {
+    try {
+      const alerts = await AsyncStorage.getItem('alerts');
+      const parsedAlerts = alerts ? JSON.parse(alerts) : {};
+      parsedAlerts[cryptoId] = targetPrice;
+      await AsyncStorage.setItem('alerts', JSON.stringify(parsedAlerts));
+      Alert.alert('Alert Set', `You will be notified when it reaches R$${targetPrice}`);
+    } catch {
+      Alert.alert('Error', 'Unable to save the alert.');
+    }
   };
 
-  const calculateProfitLoss = (amount: number, pricePaid: number, currentPrice: number) => {
-    const totalValue = amount * currentPrice;
-    const profitLoss = totalValue - amount * pricePaid;
-    return { totalValue, profitLoss };
+  const handleSetAlert = (crypto: any) => {
+    setSelectedCrypto(crypto);
+    setModalVisible(true);
+  };
+
+  const handleSaveAlert = () => {
+    if (!targetPrice || isNaN(Number(targetPrice)) || Number(targetPrice) <= 0) {
+      Alert.alert('Invalid Value', 'Please enter a valid number greater than zero.');
+      return;
+    }
+    if (selectedCrypto?.id) {
+      setAlertForCrypto(selectedCrypto.id, Number(targetPrice));
+      setModalVisible(false);
+      setTargetPrice('');
+    } else {
+      Alert.alert('Error', 'The cryptocurrency ID is invalid.');
+    }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Exchange</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.backButton}><Image source={require('../../../assets/Blackback.png')} /></Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Exchange</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.cryptoList}>
+        <View style={styles.gridContainer}>
+          {favoriteCryptos.length > 0 ? (
+            favoriteCryptos.map((crypto) => (
+              <TouchableOpacity
+                key={crypto.id}
+                style={styles.cryptoCard}
+                onPress={() => handleSetAlert(crypto)}
+              >
+                <Image source={{ uri: crypto.iconUrl }} style={styles.cryptoImage} />
+                <Text style={styles.cryptoPrice}>R$ {crypto.price.toFixed(2)}</Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text style={styles.noFavoritesText}>
+              Add cryptocurrencies to your favorites in the HomeScreen.
+            </Text>
+          )}
+        </View>
+      </ScrollView>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#6200EE" />
-      ) : favoriteCryptos.length > 0 ? (
-        favoriteCryptos.map((crypto) => {
-          const { totalValue, profitLoss } = calculateProfitLoss(
-            parseFloat(cryptoData[crypto.id]?.amount || '0'),
-            parseFloat(cryptoData[crypto.id]?.pricePaid || '0'),
-            crypto.price
-          );
-
-          return (
-            <View key={crypto.id} style={styles.cryptoCard}>
-              <Text style={styles.cryptoTitle}>{crypto.name}</Text>
-              <Text style={styles.cryptoPrice}>1 {crypto.name} = R$ {crypto.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Quantidade"
-                keyboardType="numeric"
-                value={cryptoData[crypto.id]?.amount || ''}
-                onChangeText={(value) => handleInputChange(crypto.id, 'amount', value)}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Preço pago"
-                keyboardType="numeric"
-                value={cryptoData[crypto.id]?.pricePaid || ''}
-                onChangeText={(value) => handleInputChange(crypto.id, 'pricePaid', value)}
-              />
-              <Text style={styles.result}>
-                Valor Atual: R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}{'\n'}
-                Lucro/Prejuízo: R$ {profitLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </Text>
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Set Alert for {selectedCrypto?.name}
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter value (R$)"
+              keyboardType="numeric"
+              value={targetPrice}
+              onChangeText={setTargetPrice}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={[styles.modalButton, styles.cancelButton]}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSaveAlert}
+                style={[styles.modalButton, styles.saveButton]}
+              >
+                <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
             </View>
-          );
-        })
-      ) : (
-        <Text style={styles.noFavoritesText}>Adicione criptomoedas aos favoritos na HomeScreen.</Text>
-      )}
-    </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  cryptoCard: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-  },
-  cryptoTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  cryptoPrice: {
-    fontSize: 14,
-    color: 'green',
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  },
-  result: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  noFavoritesText: {
-    textAlign: 'center',
-    fontSize: 16,
-    color: '#888',
-  },
-});
 
 export default ExchangeScreen;

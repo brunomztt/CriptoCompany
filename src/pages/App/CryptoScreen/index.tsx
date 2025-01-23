@@ -166,7 +166,7 @@ const CryptoScreen = ({ navigation }: { navigation: any }) => {
       />
       <View>
         <TouchableOpacity onPress={handleSearchCrypto}>
-          <Text style={styles.searchText}>Add</Text>
+          <Text style={styles.searchText}>Search</Text>
         </TouchableOpacity>
       </View>
 

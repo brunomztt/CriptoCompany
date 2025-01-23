@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Image, Linking } from 'react-native';
 import styles from './style';
 import defaultstyles from '../../../global/defaultstyle';
 import PhoneInput from 'react-native-phone-number-input';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ProgressBar } from 'react-native-paper';
+import { CountryCode } from 'react-native-country-picker-modal';
 
 type RootStackParamList = {
   LoginScreen: undefined;
@@ -13,6 +14,17 @@ type RootStackParamList = {
 };
 
 type NavigationProps = StackNavigationProp<RootStackParamList, 'ConfirmNumberScreen'>;
+
+const handleOpenTerms = async () => {
+  const url = 'https://github.com/brunomztt/CriptoCompany';
+  const supported = await Linking.canOpenURL(url);
+
+  if (supported) {
+    await Linking.openURL(url);
+  } else {
+    Alert.alert('Error', 'Unable to open the URL.');
+  }
+};
 
 const PhoneScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -52,7 +64,16 @@ const PhoneScreen = () => {
         }}
         countryPickerProps={{
           withFlagButton: true,
-          renderFlagButton: () => <View style={styles.flagIcon} />,
+          renderFlagButton: ({ countryCode }: { countryCode: CountryCode }) => ( // Adicionei o tipo aqui
+            <View style={styles.flagContainer}>
+              <Image
+                source={{
+                  uri: `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
+                }}
+                style={styles.flagIcon}
+              />
+            </View>
+          ),
         }}
         withDarkTheme={false}
         withShadow
@@ -60,6 +81,7 @@ const PhoneScreen = () => {
         containerStyle={styles.phoneInputContainer}
         textContainerStyle={styles.textContainer}
       />
+
       <TouchableOpacity
         style={[styles.button, !isValid && styles.buttonDisabled]}
         onPress={handleSendCode}
@@ -74,7 +96,9 @@ const PhoneScreen = () => {
       </TouchableOpacity>
       <Text style={styles.termsText}>
         By creating an account you agree to our{' '}
-        <Text style={styles.termsLink}>Terms and Conditions</Text>
+        <Text style={styles.termsLink} onPress={handleOpenTerms}>
+          Terms and Conditions
+        </Text>
       </Text>
     </View>
   );

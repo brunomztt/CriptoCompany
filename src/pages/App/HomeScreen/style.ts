@@ -3,7 +3,22 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFFFF',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#F5F5F5',
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    marginTop: 20,
+  },
+  searchBar: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 16,
+    color: '#333',
+    borderRadius: 16,
   },
   header: {
     backgroundColor: '#DC143C',
@@ -19,15 +34,6 @@ const styles = StyleSheet.create({
     fontSize: 36,
     color: '#FFF',
     fontWeight: 'bold',
-  },
-  searchBar: {
-    marginTop: 35,
-    height: 40,
-    borderColor: 'black',
-    width: '85%',
-    backgroundColor: '#FFF',
-    borderRadius: 20,
-    padding: 10,
   },
   containerbookmarks: {
     flexDirection: 'row',
